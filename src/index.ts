@@ -1,0 +1,73 @@
+import { Telegraf } from 'telegraf'
+import config from './config'
+import { logger } from './utils/logger'
+
+import { startCommand } from './commands/start'
+import { balanceCommand } from './commands/balance'
+import { spinCommand } from './commands/spin'
+import { inviteCommand } from './commands/invite'
+import { helpCommand } from './commands/help'
+import { handleTextButton } from './handlers/buttons'
+import { startNotifyServer } from './notifications/server'
+
+const bot = new Telegraf(config.bot.token)
+
+// ── Commands ──────────────────────────────────────────────────────────────────
+bot.start(startCommand)
+bot.command('balance', balanceCommand)
+bot.command('spin', spinCommand)
+bot.command('invite', inviteCommand)
+bot.command('help', helpCommand)
+
+// ── Reply keyboard button handler ─────────────────────────────────────────────
+bot.on('text', handleTextButton)
+
+// ── Error handler ─────────────────────────────────────────────────────────────
+bot.catch((err, ctx) => {
+  logger.error(`Error for ${ctx.updateType}:`, err)
+  ctx.reply('Something went wrong. Please try again.').catch(() => {})
+})
+
+// ── Launch ────────────────────────────────────────────────────────────────────
+async function launch() {
+  // Start internal notification server (for backend → bot messages)
+  startNotifyServer()
+
+  if (config.isProduction && config.webhook.domain) {
+    // Webhook mode for production
+    const webhookPath = `/webhook/${config.bot.token}`
+    const webhookUrl = `${config.webhook.domain}${webhookPath}`
+
+    await bot.launch({
+      webhook: {
+        domain: config.webhook.domain,
+        port: config.webhook.port,
+        path: webhookPath,
+      },
+    })
+
+    logger.info(`Bot running in webhook mode: ${webhookUrl}`)
+  } else {
+    // Long polling for development
+    await bot.launch()
+    logger.info('Bot running in polling mode')
+  }
+}
+
+launch().catch((err) => {
+  logger.error('Failed to launch bot:', err)
+  process.exit(1)
+})
+
+// ── Graceful shutdown ─────────────────────────────────────────────────────────
+process.once('SIGINT', () => {
+  logger.info('SIGINT received — shutting down')
+  bot.stop('SIGINT')
+  process.exit(0)
+})
+
+process.once('SIGTERM', () => {
+  logger.info('SIGTERM received — shutting down')
+  bot.stop('SIGTERM')
+  process.exit(0)
+})
