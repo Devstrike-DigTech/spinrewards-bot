@@ -22,8 +22,8 @@ const config = {
   isProduction: process.env.NODE_ENV === 'production',
   webhook: {
     domain: process.env.WEBHOOK_DOMAIN ?? '',
-    // Railway injects PORT — always prefer it over WEBHOOK_PORT
-    port: parseInt(process.env.PORT ?? process.env.WEBHOOK_PORT ?? '3000', 10),
+    // Use Railway's injected PORT; fall back to 3000 for local dev
+    port: parseInt(process.env.PORT ?? '3000', 10),
   },
   notify: {
     secret: process.env.NOTIFY_SECRET ?? '',
