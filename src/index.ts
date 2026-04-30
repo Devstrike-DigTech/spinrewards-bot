@@ -33,7 +33,7 @@ bot.catch((err: any, ctx) => {
 async function launch() {
   logger.info(`NODE_ENV=${config.env} | isProduction=${config.isProduction}`)
   logger.info(`MINI_APP_URL=${config.miniApp.url}`)
-  logger.info(`WEBHOOK_DOMAIN=${config.webhook.domain} | PORT=${config.webhook.port}`)
+  logger.info(`WEBHOOK_DOMAIN=${config.webhook.domain} | PORT=${config.webhook.port} | process.env.PORT=${process.env.PORT}`)
 
   // Start internal notification server (for backend → bot messages)
   startNotifyServer()
