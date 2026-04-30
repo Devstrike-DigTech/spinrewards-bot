@@ -14,7 +14,6 @@ const config = {
   },
   miniApp: {
     url: required('MINI_APP_URL'),
-    tgLink: process.env.MINI_APP_TG_LINK ?? required('MINI_APP_URL'),
   },
   api: {
     baseUrl: required('API_BASE_URL'),

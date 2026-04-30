@@ -13,9 +13,7 @@ export const mainMenuKeyboard = Markup.keyboard([
   ],
 ]).resize()
 
-// Inline button — uses the registered t.me deep link so web.telegram.org
-// also injects initData (raw URL web_app buttons skip it in the web client)
 export const playInlineButton = (label = '🎡 Open Spin Rewards') =>
   Markup.inlineKeyboard([
-    Markup.button.url(label, config.miniApp.tgLink),
+    Markup.button.webApp(label, config.miniApp.url),
   ])
