@@ -23,20 +23,25 @@ bot.command('help', helpCommand)
 bot.on('text', handleTextButton)
 
 // ── Error handler ─────────────────────────────────────────────────────────────
-bot.catch((err, ctx) => {
-  logger.error(`Error for ${ctx.updateType}:`, err)
+bot.catch((err: any, ctx) => {
+  logger.error(`Error for ${ctx.updateType}: ${err?.message ?? err}`)
+  logger.error(err?.stack ?? '')
   ctx.reply('Something went wrong. Please try again.').catch(() => {})
 })
 
 // ── Launch ────────────────────────────────────────────────────────────────────
 async function launch() {
+  logger.info(`NODE_ENV=${config.env} | isProduction=${config.isProduction}`)
+  logger.info(`MINI_APP_URL=${config.miniApp.url}`)
+  logger.info(`WEBHOOK_DOMAIN=${config.webhook.domain} | PORT=${config.webhook.port}`)
+
   // Start internal notification server (for backend → bot messages)
   startNotifyServer()
 
   if (config.isProduction && config.webhook.domain) {
-    // Webhook mode for production
     const webhookPath = `/webhook/${config.bot.token}`
     const webhookUrl = `${config.webhook.domain}${webhookPath}`
+    logger.info(`Starting webhook mode: ${webhookUrl}`)
 
     await bot.launch({
       webhook: {
@@ -48,7 +53,7 @@ async function launch() {
 
     logger.info(`Bot running in webhook mode: ${webhookUrl}`)
   } else {
-    // Long polling for development
+    logger.info('Starting long polling mode')
     await bot.launch()
     logger.info('Bot running in polling mode')
   }
