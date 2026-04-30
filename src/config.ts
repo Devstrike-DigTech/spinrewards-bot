@@ -10,7 +10,7 @@ function required(key: string): string {
 const config = {
   bot: {
     token: required('BOT_TOKEN'),
-    username: process.env.BOT_USERNAME ?? 'SpinRewardsBot',
+    username: process.env.BOT_USERNAME ?? 'SpinRewardsGameBot',
   },
   miniApp: {
     url: required('MINI_APP_URL'),
@@ -22,7 +22,8 @@ const config = {
   isProduction: process.env.NODE_ENV === 'production',
   webhook: {
     domain: process.env.WEBHOOK_DOMAIN ?? '',
-    port: parseInt(process.env.WEBHOOK_PORT ?? '3000', 10),
+    // Railway injects PORT — always prefer it over WEBHOOK_PORT
+    port: parseInt(process.env.PORT ?? process.env.WEBHOOK_PORT ?? '3000', 10),
   },
   notify: {
     secret: process.env.NOTIFY_SECRET ?? '',
