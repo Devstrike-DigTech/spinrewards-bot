@@ -2,6 +2,7 @@ import { Context } from 'telegraf'
 import { mainMenuKeyboard } from '../keyboards/main'
 
 export async function startCommand(ctx: Context) {
+  console.log('Received /start command from user:', ctx.from?.id)
   const user = ctx.from
   if (!user) return
 
