@@ -16,12 +16,14 @@ export async function balanceCommand(ctx: Context) {
       `<b>Total: ₦${Number(wallet.total_balance).toLocaleString()}</b>`,
       {
         parse_mode: 'HTML',
-        ...playInlineButton('🎡 Spin Now'),
+        // web_app inline button — opens mini app with initData injected,
+        // so if the user has no stored token the auth flow runs automatically
+        ...playInlineButton('🎡 Open App'),
       }
     )
   } catch {
     await ctx.reply(
-      '💰 <b>Wallet Balance</b>\n\nOpen the app to view your balance.',
+      '💰 Could not fetch balance. Open the app to view your wallet.',
       { parse_mode: 'HTML', ...playInlineButton('💰 Open Wallet') }
     )
   }
